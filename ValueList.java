@@ -1,24 +1,32 @@
 import java.util.HashMap;
 
-public class ValueList extends HashMap<String, IsVar>{
+public class ValueList extends HashMap<String, Value>{
 
 	public ValueList (){}
 
-	public int getIntValue (String s) throws Exception {
+	public void addValue (String s, int n, boolean isVar) throws Exception {
 		if (!this.containsKey(s)){
-			throw new Exception ("Constant " + s + " doesn't exist");
+			this.put(s, new Value(n, isVar));
+		}else{
+			throw new Exception ("Variable " + s + " already defined");
 		}
-		return this.get(s).getVal();
 	}
 
-	public boolean isVar(String s) throws Exception {
-		if(!this.containsKey(s)){
-			throw new Exception("Constant "+s+" doesn't exist");
+	public Value getValue (String s) {
+		if (this.containsKey(s)){
+			return this.get(s);
 		}
-		return this.get(s).isVar();
+		return null;
 	}
 
-	public void addValue (String s, IsVar n) throws Exception {
-		this.put(s, n);
+	public boolean changeValue (String s, int n) throws Exception {
+		if (!this.containsKey(s)) {
+			return false;
+		}
+		if(!this.get(s).isVar()){
+			throw new Exception ("Variable " + s + " is a constant");
+		}
+		this.put(s, new Value(n, true));
+		return true;
 	}
 }

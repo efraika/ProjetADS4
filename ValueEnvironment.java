@@ -1,20 +1,30 @@
 import java.util.*;
 
-class ValueEnvironment{
+class ValueEnvironment extends LinkedList<ValueList> {
 
-private LinkedList<ValueList> liste;
+	public ValueEnvironment (){
+		this.addFirst(new ValueList());
+	}
 
-public ValueEnvironment (){}
+	public void addValue (String s, int n, boolean isVar) throws Exception {
+		this.peek().addValue(s, n, isVar);
+	}
 
-public void addList(ValueList v){
-  liste.add(0,v);
-}
+	public int getValue (String s) throws Exception {
+		for (int i = 0; i < this.size(); i++){
+			Value v = this.get(i).getValue(s);
+			if (v != null){
+				return v.getVal();
+			}
+		}
+		throw new Exception ("Variable " + s + " doesn't exists");
+	}
 
-public ValueList getList(){ return liste.getFirst();}
-
-public void removeList(){ liste.removeFirst();}
-
-
-
-
+	public void changeValue (String s, int n) throws Exception {
+		for (int i = 0; i < this.size(); i++){
+			if (this.get(i).changeValue(s, n))
+				return;
+		}
+		throw new Exception ("Variable " + s + " doesn't exists or is a constant");
+	}
 }

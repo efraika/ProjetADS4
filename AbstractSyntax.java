@@ -17,15 +17,15 @@ class Int extends Expression {
 	}
 }
 
-class Constant extends Expression {
+class Variable extends Expression {
 	private String name;
 
-	public Constant (String s) {
+	public Variable (String s) {
 		this.name = s;
 	}
 
 	public int eval (ValueEnvironment env) throws Exception {
-		return env.getList().getIntValue(name);
+		return env.getValue(name);
 	}
 }
 
@@ -89,10 +89,7 @@ class Program extends ArrayList<Instruction> {
 	}
 
 	public void run (Graphics2D g) throws Exception {
-		ValueEnvironment env = new ValueEnvironment();
-		for (Instruction inst : this){
-			inst.exec(g, env);
-		}
+		this.run(g, new ValueEnvironment());
 	}
 }
 
@@ -103,16 +100,16 @@ abstract class Instruction {
 class Declaration extends Instruction {
 	private String name;
 	private Expression e;
-	private final boolean type;
+	private final boolean isVar;
 
 	public Declaration (String name, Expression e, boolean b){
 		this.name = name;
 		this.e = e;
-		this.type = b ;
+		this.isVar = b ;
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment env) throws Exception {
-		env.getList().addValue(name, new IsVar( e.eval(env), type));
+		env.addValue(name, e.eval(env), isVar);
 	}
 }
 
@@ -126,9 +123,7 @@ class Assignation extends Instruction {
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment env) throws Exception {
-		if(env.getList().isVar(name)){
-			env.getList().addValue(name, new IsVar(e.eval(env), true));
-		}else throw new Exception("You can't change the value of a constant");
+		env.changeValue(name, e.eval(env));
 	}
 }
 
@@ -152,10 +147,9 @@ class Bloc extends Instruction {
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment env) throws Exception{
-		ValueList newList= new ValueList();
-		newList.putAll(env.getList());
-		env.addList(newList);
+		env.addFirst(new ValueList());
 		p.run(g, env);
+		env.remove();
 	}
 }
 

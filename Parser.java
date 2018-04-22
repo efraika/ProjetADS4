@@ -31,7 +31,7 @@ class Parser{
       reader.eat(Sym.NOMBRE);
 	  return value;
     }else if (reader.check(Sym.ID)) {
-	  Constant value = new Constant (reader.getStringValue());
+	  Variable value = new Variable(reader.getStringValue());
       reader.eat(Sym.ID);
 	  return value;
     }else if (reader.check(Sym.LPAR)){
@@ -46,7 +46,7 @@ class Parser{
 			case "-" :	return new Difference (e1, e2);
 	  		case "*" :	return new Product (e1, e2);
 			case "/" :	return new Quotient (e1, e2);
-			default  :	return null;
+			default  :	throw new Exception ("Operateur doesn't exists");
 	  }
     }else{
 		throw new Exception ("'(', identificateur or number not found");
@@ -68,7 +68,7 @@ class Parser{
 	  String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      return new Declaration (name, nontermExp(),false);
+      return new Declaration (name, nontermExp(), false);
     }else if(reader.check(Sym.BEGIN)){
       reader.eat(Sym.BEGIN);
       Program p = nontermSInst();
@@ -84,15 +84,15 @@ class Parser{
 	  return new Conditional(bool, ifTrue, ifFalse);
     }else if (reader.check(Sym.VAR)) {
       reader.eat(Sym.VAR);
-			String name = reader.getStringValue();
+	  String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
       return new Declaration (name, nontermExp(), true);
     }else if (reader.check(Sym.ID)) {
-			String name = reader.getStringValue();
+	  String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      return new Assignation(name,nontermExp());
+      return new Assignation(name, nontermExp());
     }else if (reader.check(Sym.DRAWC)) {
       reader.eat(Sym.DRAWC);
       reader.eat(Sym.LPAR);
