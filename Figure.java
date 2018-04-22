@@ -16,7 +16,7 @@ abstract class Figure {
 		this.empty = empty;
 	}
 
-	public abstract void draw (Graphics2D g, ConstantEnvironment env) throws Exception;
+	public abstract void draw (Graphics2D g, ValueEnvironment env) throws Exception;
 }
 
 class Rect extends Figure {
@@ -31,7 +31,7 @@ class Rect extends Figure {
 		this.height = height;
 	}
 
-	public void draw (Graphics2D g, ConstantEnvironment env) throws Exception {
+	public void draw (Graphics2D g, ValueEnvironment env) throws Exception {
 		g.setColor(new Color(this.red, this.green, this.blue));
 		if (this.empty){
 			g.drawRect(this.x.eval(env), this.y.eval(env), this.width.eval(env), this.height.eval(env));
@@ -51,7 +51,7 @@ class Circle extends Figure {
 		this.radius = radius;
 	}
 
-	public void draw (Graphics2D g, ConstantEnvironment env) throws Exception {
+	public void draw (Graphics2D g, ValueEnvironment env) throws Exception {
 		g.setColor(new Color(this.red, this.green, this.blue));
 		if (this.empty){
 			g.drawOval(this.x.eval(env), this.y.eval(env), this.radius.eval(env), this.radius.eval(env));

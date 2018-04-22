@@ -4,15 +4,15 @@ import java.util.*;
 class Parser{
 
   //prog -> suiteInst $
-  //inst -> Begin suiteInst End 
-  //		| DrawCircle(expr, expr, expr, couleur) 
+  //inst -> Begin suiteInst End
+  //		| DrawCircle(expr, expr, expr, couleur)
   //		| FillCircle (expr, expr, expr, couleur)
   //		| DrawRect(expr, expr, expr, expr, couleur)
-  //		| FillRect(expr, expr, expr, expr, couleur) 
+  //		| FillRect(expr, expr, expr, expr, couleur)
   //		| Const identificateur = expr
   //suiteInst -> inst ; suiteInst | epsilon
   //expr -> nombre | (expr operateur expr) | identificateur
-	
+
   private LookAhead reader;
 
   public Parser(LookAhead r){reader=r;}
@@ -68,7 +68,7 @@ class Parser{
 	  String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      return new Declaration (name, nontermExp());
+      return new Declaration (name, nontermExp(),false);
     }else if(reader.check(Sym.BEGIN)){
       reader.eat(Sym.BEGIN);
       Program p = nontermSInst();
@@ -82,17 +82,17 @@ class Parser{
       reader.eat(Sym.ELSE);
       Instruction ifFalse = nontermInst();
 	  return new Conditional(bool, ifTrue, ifFalse);
-	/*
     }else if (reader.check(Sym.VAR)) {
       reader.eat(Sym.VAR);
+			String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      nontermExp();
+      return new Declaration (name, nontermExp(), true);
     }else if (reader.check(Sym.ID)) {
+			String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      nontermExp();
-	 */
+      return new Assignation(name,nontermExp());
     }else if (reader.check(Sym.DRAWC)) {
       reader.eat(Sym.DRAWC);
       reader.eat(Sym.LPAR);
