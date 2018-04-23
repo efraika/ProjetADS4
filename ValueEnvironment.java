@@ -2,9 +2,7 @@ import java.util.*;
 
 class ValueEnvironment extends LinkedList<ValueList> {
 
-	public ValueEnvironment (){
-		this.addFirst(new ValueList());
-	}
+	public ValueEnvironment (){}
 
 	public void addValue (String s, int n, boolean isVar) throws Exception {
 		this.peek().addValue(s, n, isVar);
@@ -25,6 +23,14 @@ class ValueEnvironment extends LinkedList<ValueList> {
 			if (this.get(i).changeValue(s, n))
 				return;
 		}
-		throw new Exception ("Variable " + s + " doesn't exists or is a constant");
+		throw new Exception ("Variable " + s + " doesn't exists");
+	}
+
+	public ValueEnvironment clone (){
+		ValueEnvironment copy = new ValueEnvironment ();
+		for (int i = 0; i < this.size(); i++){
+			copy.add(this.get(i).clone());
+		}
+		return copy;
 	}
 }

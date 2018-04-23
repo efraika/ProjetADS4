@@ -17,10 +17,10 @@ class Int extends Expression {
 	}
 }
 
-class Variable extends Expression {
+class Var extends Expression {
 	private String name;
 
-	public Variable (String s) {
+	public Var (String s) {
 		this.name = s;
 	}
 
@@ -82,19 +82,23 @@ class Quotient extends Expression {
 }
 
 class Program extends ArrayList<Instruction> {
-	public void run(Graphics2D g, ValueEnvironment env) throws Exception {
+	public void run(Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		varEnv.addFirst(new ValueList());
+		funcEnv.addFirst(new FunctionList());
 		for (Instruction inst : this) {
-			inst.exec(g, env);
+			inst.exec(g, varEnv, funcEnv);
 		}
+		varEnv.remove();
+		funcEnv.remove();
 	}
 
 	public void run (Graphics2D g) throws Exception {
-		this.run(g, new ValueEnvironment());
+		this.run(g, new ValueEnvironment(), new FunctionEnvironment());
 	}
 }
 
 abstract class Instruction {
-	public abstract void exec (Graphics2D g, ValueEnvironment env) throws Exception;
+	public abstract void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception;
 }
 
 class Declaration extends Instruction {
@@ -108,8 +112,27 @@ class Declaration extends Instruction {
 		this.isVar = b ;
 	}
 
-	public void exec (Graphics2D g, ValueEnvironment env) throws Exception {
-		env.addValue(name, e.eval(env), isVar);
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		varEnv.addValue(name, e.eval(varEnv), isVar);
+	}
+}
+
+class DeclarationFunction extends Instruction {
+	private String name;
+	private String [] args;
+	private Program p;
+
+	public DeclarationFunction (String s, ArrayList<String> var, Program p){
+		this.name = s;
+		this.args = new String [var.size()];
+		for (int i = 0; i < var.size(); i++){
+			this.args[i] = var.get(i);
+		}
+		this.p = p;
+	}
+
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		funcEnv.addFunction(name, args, p, varEnv.clone());
 	}
 }
 
@@ -122,8 +145,31 @@ class Assignation extends Instruction {
 		this.e = e;
 	}
 
-	public void exec (Graphics2D g, ValueEnvironment env) throws Exception {
-		env.changeValue(name, e.eval(env));
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		varEnv.changeValue(name, e.eval(varEnv));
+	}
+}
+
+class DoFunction extends Instruction {
+	String name;
+	Expression [] args;
+
+	public DoFunction (String s, ArrayList<Expression> var){
+		this.name = s;
+		this.args = new Expression [var.size()];
+		for (int i = 0; i < var.size(); i++){
+			this.args[i] = var.get(i);
+		}
+	}
+
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		Function f = funcEnv.getFunction(name, args.length);
+		ValueEnvironment env = f.getDeclarationEnv();
+		env.addFirst(new ValueList());
+		for (int i = 0; i < args.length; i++){
+			env.addValue(f.getArgs(i), args[i].eval(varEnv), true);
+		}
+		f.getProgram().run(g, env, funcEnv);
 	}
 }
 
@@ -134,8 +180,8 @@ class Draw extends Instruction {
 		this.f = f;
 	}
 
-	public void exec (Graphics2D g, ValueEnvironment env) throws Exception{
-		f.draw(g, env);
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		f.draw(g, varEnv);
 	}
 }
 
@@ -146,10 +192,8 @@ class Bloc extends Instruction {
 		this.p = p;
 	}
 
-	public void exec (Graphics2D g, ValueEnvironment env) throws Exception{
-		env.addFirst(new ValueList());
-		p.run(g, env);
-		env.remove();
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		p.run(g, varEnv, funcEnv);
 	}
 }
 
@@ -164,11 +208,28 @@ class Conditional extends Instruction {
 		this.ifFalse = ifFalse;
 	}
 
-	public void exec (Graphics2D g, ValueEnvironment env) throws Exception{
-		if (this.bool.eval(env) == 0){
-			this.ifTrue.exec(g, env);
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		if (this.bool.eval(varEnv) == 0){
+			this.ifTrue.exec(g, varEnv, funcEnv);
 		}else{
-			this.ifFalse.exec(g, env);
+			this.ifFalse.exec(g, varEnv, funcEnv);
+		}
+	}
+}
+
+class Loop extends Instruction {
+	private Expression e;
+	private Program p;
+
+	public Loop (Expression e, Program p){
+		this.e = e;
+		this.p = p;
+	}
+
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		int nbLoop = e.eval(varEnv);
+		for (int i = 0; i < nbLoop; i++){
+			this.p.run(g, varEnv, funcEnv);
 		}
 	}
 }

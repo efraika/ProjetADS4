@@ -23,6 +23,9 @@ blank = [\n\r \t]
 "End" {return new Token(Sym.END);}
 "Const" {return new Token(Sym.CONST);}
 "Var" {return new Token(Sym.VAR);}
+"Def" {return new Token(Sym.DEF);}
+"While" {return new Token(Sym.WHILE);}
+"Do" {return new Token(Sym.DO);}
 {nombre} {return new IntToken(Sym.NOMBRE, Integer.parseInt(yytext()));}
 {couleur} {return new StringToken(Sym.COULEUR, yytext());}
 "," {return new Token (Sym.VIRG);}

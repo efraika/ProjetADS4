@@ -19,5 +19,8 @@ public enum Sym{
   IF,
   THEN,
   ELSE,
-  VAR;
+  VAR,
+  DEF,
+  WHILE,
+  DO;
 }
