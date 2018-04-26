@@ -1,0 +1,10 @@
+Var z = 100;
+Def circle (x, y)
+	FillCircle(x, y, z, #000000);
+End;
+Var i = 1;
+z = 10;
+While 4 Do
+	Do circle((20 + i), 40);
+	i = (i + 100);
+End;
