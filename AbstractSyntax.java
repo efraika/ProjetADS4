@@ -29,55 +29,24 @@ class Var extends Expression {
 	}
 }
 
-class Sum extends Expression {
+class Operation extends Expression {
 	private Expression left, right;
+	private String operateur;
 
-	public Sum (Expression e1, Expression e2) {
+	public Operation (Expression e1, Expression e2, String operateur) {
 		this.left = e1;
 		this.right = e2;
+		this.operateur = operateur;
 	}
 
 	public int eval (ValueEnvironment env) throws Exception {
-		return (left.eval(env) + right.eval(env));
-	}
-}
-
-class Difference extends Expression {
-	private Expression left, right;
-
-	public Difference (Expression e1, Expression e2) {
-		this.left = e1;
-		this.right = e2;
-	}
-
-	public int eval (ValueEnvironment env) throws Exception {
-		return (left.eval(env) - right.eval(env));
-	}
-}
-
-class Product extends Expression {
-	private Expression left, right;
-
-	public Product (Expression e1, Expression e2) {
-		this.left = e1;
-		this.right = e2;
-	}
-
-	public int eval (ValueEnvironment env) throws Exception {
-		return (left.eval(env) * right.eval(env));
-	}
-}
-
-class Quotient extends Expression {
-	private Expression left, right;
-
-	public Quotient (Expression e1, Expression e2) {
-		this.left = e1;
-		this.right = e2;
-	}
-
-	public int eval (ValueEnvironment env) throws Exception {
-		return (left.eval(env) / right.eval(env));
+		switch (operateur){
+			case "+": return (left.eval(env) + right.eval(env));
+			case "-": return (left.eval(env) - right.eval(env));
+			case "*": return (left.eval(env) * right.eval(env));
+			case "/": return (left.eval(env) / right.eval(env));
+		}
+		throw new Exception ("Unknown operateur");
 	}
 }
 

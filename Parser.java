@@ -47,19 +47,23 @@ class Parser{
     }else if (reader.check(Sym.LPAR)){
       reader.eat(Sym.LPAR);
       Expression e1 = nontermExp();
-	  String op = reader.getStringValue();
-      reader.eat(Sym.OP);
+	  String ope = termOperateur();
       Expression e2 = nontermExp();
       reader.eat(Sym.RPAR);
-	  switch (op){
-	  		case "+" :	return new Sum (e1, e2);
-			case "-" :	return new Difference (e1, e2);
-	  		case "*" :	return new Product (e1, e2);
-			case "/" :	return new Quotient (e1, e2);
-			default  :	throw new Exception ("Operateur doesn't exists");
-	  }
+	  return new Operation (e1, e2, ope);
     }else{
 		throw new Exception ("'(', identificateur or number not found");
+	}
+  }
+
+  //operateur -> + | - | * | /
+  public String termOperateur () throws Exception {
+  	if (reader.check(Sym.OP)){
+		String operateur = reader.getStringValue();
+		reader.eat(Sym.OP);
+		return operateur;
+	}else{
+		throw new Exception ("'+', '-', '*' or '/' not found");
 	}
   }
 
