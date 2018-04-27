@@ -16,7 +16,7 @@ class Parser{
   //		| Def id (args) suiteInst End
   //		| Do id (expressions)
   //		| While expr do suiteInst End
-  //    | For (identificateur, expr, expr, expr ) suiteInst End
+  //    	| For (identificateur, expr, expr, expr ) suiteInst End
   //suiteInst -> inst ; suiteInst | epsilon
   //expr -> nombre | (expr operateur expr) | identificateur
   //args -> id suiteArgs | epsilon
@@ -80,14 +80,14 @@ class Parser{
   //		| Def id (args) suiteIinst End
   //		| Do id (expressions)
   //		| While expr do suiteInst End
-  //    | For (identificateur, expr, expr, expr ) suiteInst End
+  //    	| For (identificateur, expr, expr, expr ) suiteInst End
   public Instruction nontermInst() throws  Exception {
     if(reader.check(Sym.CONST)){
       reader.eat(Sym.CONST);
 	  String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      return new Declaration (name, nontermExp(), false);
+      return new Declaration (name, nontermExp(), true);
     }else if(reader.check(Sym.BEGIN)){
       reader.eat(Sym.BEGIN);
       Program p = nontermSInst();
@@ -106,7 +106,7 @@ class Parser{
 	  String name = reader.getStringValue();
       reader.eat(Sym.ID);
       reader.eat(Sym.EQ);
-      return new Declaration (name, nontermExp(), true);
+      return new Declaration (name, nontermExp(), false);
     }else if (reader.check(Sym.ID)){
 	  String name = reader.getStringValue();
       reader.eat(Sym.ID);

@@ -5,8 +5,8 @@ public class ValueEnvironment extends LinkedList<ValueList> {
 
 	public ValueEnvironment (){}
 
-	public void addValue (String s, int n, boolean isVar) throws Exception {
-		this.peek().addValue(s, n, isVar);
+	public void addValue (String s, int n, boolean isConst) throws Exception {
+		this.peek().addValue(s, n, isConst);
 	}
 
 	public int getValue (String s) throws Exception {
@@ -40,9 +40,9 @@ class ValueList extends HashMap<String, Value>{
 
 	public ValueList (){}
 
-	public void addValue (String s, int n, boolean isVar) throws Exception {
+	public void addValue (String s, int n, boolean isConst) throws Exception {
 		if (!this.containsKey(s)){
-			this.put(s, new Value(n, isVar));
+			this.put(s, new Value(n, isConst));
 		}else{
 			throw new Exception ("Variable " + s + " already defined");
 		}
@@ -59,10 +59,10 @@ class ValueList extends HashMap<String, Value>{
 		if (!this.containsKey(s)) {
 			return false;
 		}
-		if(!this.get(s).isVar()){
+		if(this.get(s).isConst()){
 			throw new Exception ("Variable " + s + " is a constant");
 		}
-		this.put(s, new Value(n, true));
+		this.put(s, new Value(n, false));
 		return true;
 	}
 
@@ -79,18 +79,18 @@ class ValueList extends HashMap<String, Value>{
 class Value{
 
 	private int value;
-	private final boolean isVar;
+	private final boolean isConst;
 
 	public Value(int n, boolean b){
 		this.value = n;
- 		this.isVar = b;
+ 		this.isConst = b;
 	}
 
 	public int getVal(){
 		return this.value;
 	}
 
-	public boolean isVar(){
-		return this.isVar;
+	public boolean isConst(){
+		return this.isConst;
 	}
 }

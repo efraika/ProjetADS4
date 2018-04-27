@@ -52,17 +52,28 @@ class Operation extends Expression {
 
 class Program extends ArrayList<Instruction> {
 	public void run(Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
-		varEnv.addFirst(new ValueList());
-		funcEnv.addFirst(new FunctionList());
 		for (Instruction inst : this) {
 			inst.exec(g, varEnv, funcEnv);
 		}
-		varEnv.remove();
-		funcEnv.remove();
 	}
 
 	public void run (Graphics2D g) throws Exception {
-		this.run(g, new ValueEnvironment(), new FunctionEnvironment());
+		ValueEnvironment varEnv = new ValueEnvironment();
+		FunctionEnvironment funcEnv = new FunctionEnvironment();
+		this.addEnvironmentLists(varEnv, funcEnv);
+		this.run(g, varEnv, funcEnv);
+		this.removeEnvironmentLists(varEnv, funcEnv);
+	}
+
+
+	public static void addEnvironmentLists (ValueEnvironment varEnv, FunctionEnvironment funcEnv) {
+		varEnv.addFirst(new ValueList());
+		funcEnv.addFirst(new FunctionList());
+	}
+
+	public static void removeEnvironmentLists (ValueEnvironment varEnv, FunctionEnvironment funcEnv) {
+		varEnv.remove();
+		funcEnv.remove();
 	}
 }
 
@@ -73,16 +84,16 @@ abstract class Instruction {
 class Declaration extends Instruction {
 	private String name;
 	private Expression e;
-	private final boolean isVar;
+	private final boolean isConst;
 
 	public Declaration (String name, Expression e, boolean b){
 		this.name = name;
 		this.e = e;
-		this.isVar = b ;
+		this.isConst = b ;
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
-		varEnv.addValue(name, e.eval(varEnv), isVar);
+		varEnv.addValue(name, e.eval(varEnv), isConst);
 	}
 }
 
@@ -136,7 +147,7 @@ class DoFunction extends Instruction {
 		ValueEnvironment env = f.getDeclarationEnv();
 		env.addFirst(new ValueList());
 		for (int i = 0; i < args.length; i++){
-			env.addValue(f.getArgs(i), args[i].eval(varEnv), true);
+			env.addValue(f.getArgs(i), args[i].eval(varEnv), false);
 		}
 		f.getProgram().run(g, env, funcEnv);
 	}
@@ -162,7 +173,9 @@ class Bloc extends Instruction {
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		Program.addEnvironmentLists(varEnv, funcEnv);
 		p.run(g, varEnv, funcEnv);
+		Program.removeEnvironmentLists(varEnv, funcEnv);
 	}
 }
 
@@ -196,38 +209,38 @@ class Loop extends Instruction {
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		Program.addEnvironmentLists(varEnv, funcEnv);
 		int nbLoop = e.eval(varEnv);
 		for (int i = 0; i < nbLoop; i++){
 			this.p.run(g, varEnv, funcEnv);
 		}
+		Program.removeEnvironmentLists(varEnv, funcEnv);
 	}
 }
 
 class For extends Instruction {
 	private String name;
 	private Expression begin, end, step;
-	private Program inst;
+	private Program p;
 
-	public For(String i, Expression a, Expression b, Expression c, Program inst){
-		this.name=i;
-		this.begin=a;
-		this.end=b;
-		this.step=c;
-		this.inst=inst;
+	public For(String i, Expression a, Expression b, Expression c, Program p){
+		this.name = i;
+		this.begin = a;
+		this.end = b;
+		this.step = c;
+		this.p = p;
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
-		varEnv.addValue(name, begin.eval(varEnv), true);
-		boolean pos= (step.eval(varEnv)>0);
-		if(!pos && (begin.eval(varEnv)<end.eval(varEnv))) {
-			throw new Exception("La boucle ne s'arretera jamais");
-		}else{
-			while ((pos && begin.eval(varEnv)<end.eval(varEnv)) || (!pos && begin.eval(varEnv)>end.eval(varEnv))) {
-				inst.run(g, varEnv, funcEnv);
-				begin= new Operation(begin, step, "+");
-				varEnv.changeValue(name, begin.eval(varEnv));
-			}
+		Program.addEnvironmentLists(varEnv, funcEnv);
+		int stepValue = step.eval(varEnv);
+		varEnv.addValue(name, begin.eval(varEnv), false);
+		boolean stepPositif = (stepValue >= 0);
+		while ((stepPositif && varEnv.getValue(name) < end.eval(varEnv)) || (!stepPositif && varEnv.getValue(name) > end.eval(varEnv))) {
+			p.run(g, varEnv, funcEnv);
+			varEnv.changeValue(name, varEnv.getValue(name) + stepValue);
 		}
+		Program.removeEnvironmentLists(varEnv, funcEnv);
 	}
 
 }

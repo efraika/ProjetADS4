@@ -8,11 +8,9 @@ abstract class Figure {
 	protected boolean empty;
 
 	public Figure (String color, boolean empty){
-		if (color.length() == 7 && color.charAt(0) == '#'){
-			this.red = Integer.parseInt(color.substring(1, 3), 16);
-			this.green = Integer.parseInt(color.substring(3, 5), 16);
-			this.blue = Integer.parseInt(color.substring(5, 7), 16);
-		}
+		this.red = Integer.parseInt(color.substring(1, 3), 16);
+		this.green = Integer.parseInt(color.substring(3, 5), 16);
+		this.blue = Integer.parseInt(color.substring(5, 7), 16);
 		this.empty = empty;
 	}
 
