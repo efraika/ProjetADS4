@@ -218,10 +218,15 @@ class For extends Instruction {
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
 		declare().exec(g, varEnv, funcEnv);
-		while (begin.eval(varEnv)<end.eval(varEnv)) {
-			inst.run(g, varEnv, funcEnv);
-			begin= new Operation(begin, step, "+");
-			change().exec(g, varEnv, funcEnv);
+		boolean pos= (step.eval(varEnv)>0);
+		if(!pos && (begin.eval(varEnv)<end.eval(varEnv))) {
+			throw new Exception("La boucle ne s'arretera jamais");
+		}else{
+			while ((pos && begin.eval(varEnv)<end.eval(varEnv)) || (!pos && begin.eval(varEnv)>end.eval(varEnv))) {
+				inst.run(g, varEnv, funcEnv);
+				begin= new Operation(begin, step, "+");
+				change().exec(g, varEnv, funcEnv);
+			}
 		}
 	}
 
