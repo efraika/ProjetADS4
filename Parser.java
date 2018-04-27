@@ -16,6 +16,7 @@ class Parser{
   //		| Def id (args) suiteInst End
   //		| Do id (expressions)
   //		| While expr do suiteInst End
+  //    | For (identificateur, expr, expr, expr ) suiteInst End
   //suiteInst -> inst ; suiteInst | epsilon
   //expr -> nombre | (expr operateur expr) | identificateur
   //args -> id suiteArgs | epsilon
@@ -79,6 +80,7 @@ class Parser{
   //		| Def id (args) suiteIinst End
   //		| Do id (expressions)
   //		| While expr do suiteInst End
+  //    | For (identificateur, expr, expr, expr ) suiteInst End
   public Instruction nontermInst() throws  Exception {
     if(reader.check(Sym.CONST)){
       reader.eat(Sym.CONST);
@@ -191,6 +193,21 @@ class Parser{
       reader.eat(Sym.COULEUR);
       reader.eat(Sym.RPAR);
 	  return new Draw(new Rect(color, x, y, length, height, false));
+    }else if (reader.check(Sym.FOR)){
+      reader.eat(Sym.FOR);
+      reader.eat(Sym.LPAR);
+      String i= reader.getStringValue();
+      reader.eat(Sym.ID);
+      reader.eat(Sym.VIRG);
+      Expression a= nontermExp();
+      reader.eat(Sym.VIRG);
+      Expression b= nontermExp();
+      reader.eat(Sym.VIRG);
+      Expression c= nontermExp();
+      reader.eat(Sym.RPAR);
+      Program inst= nontermSInst();
+      reader.eat(Sym.END);
+      return new For(i,a,b,c,inst);
     }else{
 		throw new Exception ("'Const', 'Begin', 'DrawCircle', 'FillCircle', 'DrawRect' or 'FillRect' not found");
 	}

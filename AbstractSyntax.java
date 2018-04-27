@@ -202,3 +202,31 @@ class Loop extends Instruction {
 		}
 	}
 }
+
+class For extends Instruction {
+	private String name;
+	private Expression begin, end, step;
+	private Program inst;
+
+	public For(String i, Expression a, Expression b, Expression c, Program inst){
+		this.name=i;
+		this.begin=a;
+		this.end=b;
+		this.step=c;
+		this.inst=inst;
+	}
+
+	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		declare().exec(g, varEnv, funcEnv);
+		while (begin.eval(varEnv)<end.eval(varEnv)) {
+			inst.run(g, varEnv, funcEnv);
+			begin= new Operation(begin, step, "+");
+			change().exec(g, varEnv, funcEnv);
+		}
+	}
+
+	private Declaration declare(){ return new Declaration(name, begin, true);}
+
+	private Assignation change(){return new Assignation(name,begin);}
+
+}

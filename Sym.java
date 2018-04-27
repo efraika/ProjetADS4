@@ -22,5 +22,6 @@ public enum Sym{
   VAR,
   DEF,
   WHILE,
-  DO;
+  DO,
+  FOR;
 }
