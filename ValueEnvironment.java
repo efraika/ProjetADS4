@@ -62,7 +62,7 @@ class ValueList extends HashMap<String, Value>{
 		if(this.get(s).isConst()){
 			throw new Exception ("Variable " + s + " is a constant");
 		}
-		this.put(s, new Value(n, false));
+		this.get(s).setVal(n);
 		return true;
 	}
 
@@ -70,7 +70,7 @@ class ValueList extends HashMap<String, Value>{
 		ValueList copy = new ValueList();
 		Object [] keys = this.keySet().toArray();
 		for (int i = 0; i < keys.length; i++){
-			copy.put((String)keys[i], this.get(keys[i]));
+			copy.put((String)keys[i], this.get(keys[i]).clone());
 		}
 		return copy;
 	}
@@ -90,7 +90,15 @@ class Value{
 		return this.value;
 	}
 
+	public void setVal (int n){
+		this.value = n;
+	}
+
 	public boolean isConst(){
 		return this.isConst;
+	}
+
+	public Value clone (){
+		return new Value (this.value, this.isConst);
 	}
 }

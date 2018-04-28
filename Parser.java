@@ -136,7 +136,7 @@ class Parser{
 	  reader.eat(Sym.DO);
 	  Program p = nontermSInst();
 	  reader.eat(Sym.END);
-	  return new Loop (e, p);
+	  return new While (e, p);
     }else if (reader.check(Sym.DRAWC)){
       reader.eat(Sym.DRAWC);
       reader.eat(Sym.LPAR);

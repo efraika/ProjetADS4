@@ -199,11 +199,11 @@ class Conditional extends Instruction {
 	}
 }
 
-class Loop extends Instruction {
+class While extends Instruction {
 	private Expression e;
 	private Program p;
 
-	public Loop (Expression e, Program p){
+	public While (Expression e, Program p){
 		this.e = e;
 		this.p = p;
 	}
