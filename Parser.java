@@ -17,12 +17,12 @@ class Parser{
   //		| Do id (nombres)
   //		| While expr do suiteInst End
   //   	| For (identificateur, expr, expr, expr ) suiteInst End
-  //suiteInst -> inst ; suiteInst | epsilon
+  //suiteInst -> inst ; suiteInst | ε
   //expr -> nombre | (expr operateur expr) | identificateur
-  //args -> id suiteArgs | epsilon
-  //suiteArgs -> , id suiteArgs | epsilon
-  //nombres -> expr suiteNombres | epsilon
-  //suiteNombres -> , expr suiteNombres | epsilon
+  //args -> id suiteArgs | ε
+  //suiteArgs -> , id suiteArgs | ε
+  //nombres -> expr suiteNombres | ε
+  //suiteNombres -> , expr suiteNombres | ε
 
   private LookAhead reader;
 
@@ -213,7 +213,7 @@ class Parser{
 	}
   }
 
-  //suiteInst -> inst ; suiteInst | epsilon
+  //suiteInst -> inst ; suiteInst | ε
   public Program nontermSInst() throws Exception {
 	Program p = new Program();
 	if(reader.check(Sym.EOF) || reader.check(Sym.END)){
@@ -226,8 +226,8 @@ class Parser{
 	}
   }
 
-  //args -> id suiteArgs | epsilon
-  //suiteArgs -> , id suiteArgs | epsilon
+  //args -> id suiteArgs | ε
+  //suiteArgs -> , id suiteArgs | ε
   public ArrayList<String> nontermArgs() throws Exception {
   	ArrayList<String> e = new ArrayList<String>();
 	if (reader.check(Sym.RPAR)){
@@ -246,8 +246,8 @@ class Parser{
 	}
   }
 
-  //nombres -> expr suiteNombres | epsilon
-  //suiteNombres -> , expr suiteNombres | epsilon
+  //nombres -> expr suiteNombres | ε
+  //suiteNombres -> , expr suiteNombres | ε
   public ArrayList<Expression> nontermNombres () throws Exception {
   	ArrayList<Expression> e = new ArrayList<Expression>();
 	if (reader.check(Sym.RPAR)){
