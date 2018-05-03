@@ -14,9 +14,9 @@ class Parser{
   //		| Var identificateur = expr
   //		| identificateur = expr
   //		| Def id (args) suiteInst End
-  //		| Do id (expressions)
+  //		| Do id (nombres)
   //		| While expr do suiteInst End
-  //    	| For (identificateur, expr, expr, expr ) suiteInst End
+  //   	| For (identificateur, expr, expr, expr ) suiteInst End
   //suiteInst -> inst ; suiteInst | epsilon
   //expr -> nombre | (expr operateur expr) | identificateur
   //args -> id suiteArgs | epsilon
@@ -78,9 +78,9 @@ class Parser{
   //		| Var identificateur = expr
   //		| identificateur = expr
   //		| Def id (args) suiteIinst End
-  //		| Do id (expressions)
+  //		| Do id (nombres)
   //		| While expr do suiteInst End
-  //    	| For (identificateur, expr, expr, expr ) suiteInst End
+  //    | For (identificateur, expr, expr, expr ) suiteInst End
   public Instruction nontermInst() throws  Exception {
     if(reader.check(Sym.CONST)){
       reader.eat(Sym.CONST);
