@@ -6,8 +6,8 @@ public class FunctionEnvironment extends LinkedList<FunctionList> {
 
 	public FunctionEnvironment (){}
 
-	public void addFunction (String name, String [] args, Program p, ValueEnvironment varEnv) throws Exception {
-		this.peek().addFunction(name, args, p, varEnv);
+	public void addFunction (String name, String [] args, Program p, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
+		this.peek().addFunction(name, args, p, varEnv, funcEnv);
 	}
 
 	public Function getFunction (String name, int nbArgs) throws Exception {
@@ -19,16 +19,24 @@ public class FunctionEnvironment extends LinkedList<FunctionList> {
 		}
 		throw new Exception ("Function " + name + " doesn't exists");
 	}
+	
+	public FunctionEnvironment clone (){
+		FunctionEnvironment copy = new FunctionEnvironment();
+		for (FunctionList fl : this){
+			copy.add(fl.clone());
+		}
+		return copy;
+	}
 }
 
 class FunctionList extends HashMap<Signature, Function> {
 
 	public FunctionList (){}
 
-	public void addFunction (String name, String [] args, Program p, ValueEnvironment varEnv) throws Exception {
+	public void addFunction (String name, String [] args, Program p, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
 		Signature newFunctionSign = new Signature(name, args.length);
 		if (!this.containsKey(newFunctionSign)){
-			this.put(newFunctionSign, new Function (args, p, varEnv));
+			this.put(newFunctionSign, new Function (args, p, varEnv, funcEnv));
 		}else{
 			throw new Exception ("Function signature already exists");
 		}
@@ -40,6 +48,15 @@ class FunctionList extends HashMap<Signature, Function> {
 			return this.get(sign);
 		}
 		return null;
+	}
+
+	public FunctionList clone (){
+		FunctionList copy = new FunctionList();
+		Object [] keys = this.keySet().toArray();
+		for (Object k : keys){
+			copy.put(((Signature)k).clone(), this.get(k).clone());
+		}
+		return copy;
 	}
 }
 
@@ -66,17 +83,23 @@ class Signature {
 	public int hashCode (){
 		return Objects.hash(this.name, this.nbArgs);
 	}
+	
+	public Signature clone (){
+		return new Signature (this.name, this.nbArgs);
+	}
 }
 
 class Function {
-	private String [] args;
-	private Program body;
-	private ValueEnvironment declarationEnv;
+	private final String [] args;
+	private final Program body;
+	private final ValueEnvironment declarationVarEnv;
+	private final FunctionEnvironment declarationFuncEnv;
 
-	public Function (String [] args, Program p , ValueEnvironment varEnv){
+	public Function (String [] args, Program p , ValueEnvironment varEnv, FunctionEnvironment funcEnv){
 		this.args = args;
 		this.body = p;
-		this.declarationEnv = varEnv;
+		this.declarationVarEnv = varEnv;
+		this.declarationFuncEnv = funcEnv;
 	}
 
 	public String [] getArgs (){
@@ -87,12 +110,19 @@ class Function {
 		return this.body;
 	}
 
-	//La valeur n est forcément entre 0 et (args.length - 1)
 	public String getArgs (int n){
 		return this.args[n];
 	}
 
-	public ValueEnvironment getDeclarationEnv (){
-		return this.declarationEnv;
+	public ValueEnvironment getDeclarationVarEnv (){
+		return this.declarationVarEnv;
+	}
+
+	public FunctionEnvironment getDeclarationFuncEnv (){
+		return this.declarationFuncEnv;
+	}
+
+	public Function clone (){
+		return new Function (this.args, this.body, this.declarationVarEnv, this.declarationFuncEnv);
 	}
 }

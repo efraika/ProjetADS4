@@ -2,9 +2,9 @@ Var z = 100;
 Def circle (x, y)
 	FillCircle(x, y, z, #000000);
 End;
-Var i = 1;
-z = 10;
-While 4 Do
-	Do circle((20 + i), 40);
-	i = (i + 100);
+Def rect (x)
+	FillRect(x, 100, 100, 100, #212121);
+	Do circle(400, 200);
 End;
+z = 10;
+Do rect(200);

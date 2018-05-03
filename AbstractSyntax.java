@@ -112,7 +112,7 @@ class DeclarationFunction extends Instruction {
 	}
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
-		funcEnv.addFunction(name, args, p, varEnv.clone());
+		funcEnv.addFunction(name, args, p, varEnv.clone(), funcEnv.clone());
 	}
 }
 
@@ -144,12 +144,14 @@ class DoFunction extends Instruction {
 
 	public void exec (Graphics2D g, ValueEnvironment varEnv, FunctionEnvironment funcEnv) throws Exception {
 		Function f = funcEnv.getFunction(name, args.length);
-		ValueEnvironment env = f.getDeclarationEnv();
-		env.addFirst(new ValueList());
+		ValueEnvironment functionVarEnv = f.getDeclarationVarEnv();
+		FunctionEnvironment functionFuncEnv = f.getDeclarationFuncEnv();
+		Program.addEnvironmentLists(functionVarEnv, functionFuncEnv);
 		for (int i = 0; i < args.length; i++){
-			env.addValue(f.getArgs(i), args[i].eval(varEnv), false);
+			functionVarEnv.addValue(f.getArgs(i), args[i].eval(varEnv), false);
 		}
-		f.getProgram().run(g, env, funcEnv);
+		f.getProgram().run(g, functionVarEnv, functionFuncEnv);
+		Program.removeEnvironmentLists(functionVarEnv, functionFuncEnv);
 	}
 }
 

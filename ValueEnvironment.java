@@ -29,8 +29,8 @@ public class ValueEnvironment extends LinkedList<ValueList> {
 
 	public ValueEnvironment clone (){
 		ValueEnvironment copy = new ValueEnvironment ();
-		for (int i = 0; i < this.size(); i++){
-			copy.add(this.get(i).clone());
+		for (ValueList vl : this){
+			copy.add(vl.clone());
 		}
 		return copy;
 	}
