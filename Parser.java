@@ -15,7 +15,7 @@ class Parser{
   //		| identificateur = expr
   //		| Def id (args) suiteInst End
   //		| Do id (nombres)
-  //		| While expr do suiteInst End
+  //		| While expr Do suiteInst End
   //   	| For (identificateur, expr, expr, expr ) suiteInst End
   //suiteInst -> inst ; suiteInst | ε
   //expr -> nombre | (expr operateur expr) | identificateur
@@ -79,7 +79,7 @@ class Parser{
   //		| identificateur = expr
   //		| Def id (args) suiteIinst End
   //		| Do id (nombres)
-  //		| While expr do suiteInst End
+  //		| While expr Do suiteInst End
   //    | For (identificateur, expr, expr, expr ) suiteInst End
   public Instruction nontermInst() throws  Exception {
     if(reader.check(Sym.CONST)){
