@@ -17,7 +17,7 @@ public class FunctionEnvironment extends LinkedList<FunctionList> {
 				return f;
 			}
 		}
-		throw new Exception ("Function " + name + " doesn't exists");
+		throw new Exception ("Function " + name + " with " + nbArgs + " arguments doesn't exists");
 	}
 	
 	public FunctionEnvironment clone (){
@@ -38,7 +38,7 @@ class FunctionList extends HashMap<Signature, Function> {
 		if (!this.containsKey(newFunctionSign)){
 			this.put(newFunctionSign, new Function (args, p, varEnv, funcEnv));
 		}else{
-			throw new Exception ("Function signature already exists");
+			throw new Exception ("Function " + name + " with " + args.length + " arguments already exists");
 		}
 	}
 
